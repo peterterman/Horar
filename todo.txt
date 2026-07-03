@@ -1,0 +1,29 @@
+
+
+mulighed for at vælge hussystem
+
+
+
+¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨
+Version 1:
+Signifikatorer, huse, dignitet, aspekt, reception, Månen, ja/nej.
+
+Version 2:
+Prohibition, frustration, translation, collection, combustion, void Moon.
+
+Version 3:
+Særlige spørgsmålstyper: kærlighed, job, penge, tabte ting.
+
+Version 4:
+Forklarende tekst med vægtning: hvorfor appen svarer ja/nej.
+
+Gennemgå tekst for klarhed
+vis max og min interval
+
+svar opdelt
+1. konklusion - medtag 3-4 vigtigste elementer
+2. horoskop og tabel
+3. detaljer
+
+tidspunt sættes når der trykkes send mm der står andet i tidspunkt
+

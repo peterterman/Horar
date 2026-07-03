@@ -1,0 +1,32 @@
+name: horar
+description: Horary astrology app based on traditional significators and John Frawley-inspired rules.
+publish_to: 'none'
+version: 1.0.0+1
+
+environment:
+  sdk: '>=3.4.0 <4.0.0'
+
+dependencies:
+  flutter:
+    sdk: flutter
+  sweph: ^3.2.1+2.10.3
+  path_provider: ^2.1.5
+  http: ^1.2.2
+  geolocator: ^14.0.3
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_launcher_icons: ^0.14.3
+
+flutter:
+  uses-material-design: true
+  assets:
+    - assets/horar_icon.png
+
+flutter_launcher_icons:
+  android: true
+  ios: true
+  image_path: "assets/horar_icon.png"
+  remove_alpha_ios: true
+  min_sdk_android: 23
