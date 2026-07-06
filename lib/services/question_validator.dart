@@ -1,19 +1,24 @@
 import '../models/horary_models.dart';
+import 'derived_house_resolver.dart';
 
 class HouseSuggestion {
   final int house;
   final HoraryQuestionType questionType;
   final int score;
   final String reason;
+  final bool isDerived;
 
   const HouseSuggestion({
     required this.house,
     required this.questionType,
     required this.score,
     required this.reason,
+    this.isDerived = false,
   });
 
-  String get title => '$house. hus – ${questionType.shortLabel}';
+  String get title => isDerived
+      ? 'Afledt: $house. hus – ${questionType.shortLabel}'
+      : '$house. hus – ${questionType.shortLabel}';
 }
 
 class QuestionValidationResult {
@@ -51,6 +56,28 @@ class QuestionValidator {
     final question = rawQuestion.trim();
     final q = _normalize(question);
     final words = q.split(RegExp(r'\s+')).where((w) => w.isNotEmpty).toList();
+
+    if (q == 'test') {
+      return const QuestionValidationResult(
+        question: 'test',
+        hasEnoughText: true,
+        isQuestionLike: true,
+        hasSingleFocus: true,
+        isConcreteEnough: true,
+        isValid: true,
+        answerMode: HoraryAnswerMode.yesNo,
+        verdict: 'Testspørgsmål accepteret.',
+        warnings: <String>[],
+        suggestions: <HouseSuggestion>[
+          HouseSuggestion(
+            house: 7,
+            questionType: HoraryQuestionType.general,
+            score: 1,
+            reason: 'Testtilstand: generelt spørgsmål med manuelt/standard husvalg.',
+          ),
+        ],
+      );
+    }
 
     final warnings = <String>[];
     final hasEnoughText = question.length >= 8 && words.length >= 3;
@@ -209,6 +236,7 @@ class QuestionValidator {
   }
 
   List<HouseSuggestion> _suggestHouses(String q) {
+    final derived = DerivedHouseResolver.resolve(q);
     final scored = <_ScoredType>[];
 
     void add(HoraryQuestionType type, int score, List<String> terms, String reason) {
@@ -375,6 +403,14 @@ class QuestionValidator {
       'firma', 'virksomhed', 'forretning', 'app store', 'appstore', 'projektets succes',
     ], 'Firmaets synlige succes og position peger ofte på 10. hus.');
 
+    if (_isChampionshipTitleQuestion(q)) {
+      scored.add(const _ScoredType(
+        type: HoraryQuestionType.championshipTitle,
+        score: 80,
+        reason: 'Spørgsmålet handler om titel, mesterskab, pokal eller offentlig sejr. Det peger på 10. hus; sport/spil kan være 5. hus som baggrund.',
+      ));
+    }
+
     add(HoraryQuestionType.friendsGroups, 7, [
       'ven', 'venner', 'gruppe', 'forening', 'klub', 'fællesskab', 'faellesskab',
     ], 'Venner, grupper og foreninger hører til 11. hus.');
@@ -419,7 +455,7 @@ class QuestionValidator {
         return a.type.defaultHouse.compareTo(b.type.defaultHouse);
       });
 
-    return sorted.take(3).map((item) {
+    final normalSuggestions = sorted.take(3).map((item) {
       return HouseSuggestion(
         house: item.type.defaultHouse,
         questionType: item.type,
@@ -427,6 +463,48 @@ class QuestionValidator {
         reason: item.reason,
       );
     }).toList();
+
+    if (derived == null) return normalSuggestions;
+
+    final derivedSuggestion = HouseSuggestion(
+      house: derived.finalHouse,
+      questionType: derived.questionType,
+      score: 999,
+      reason: derived.explanation,
+      isDerived: true,
+    );
+
+    return [
+      derivedSuggestion,
+      ...normalSuggestions.where((s) => s.house != derived.finalHouse).take(2),
+    ];
+  }
+
+  bool _isChampionshipTitleQuestion(String q) {
+    final hasChampionshipSignal = _containsAny(q, const [
+      'vinder vm', 'vinde vm', 'vundet vm', 'bliver verdensmester', 'verdensmester',
+      'verdensmesterskab', 'verdensmesterskabet', 'vinder mesterskabet',
+      'vinde mesterskabet', 'mesterskab', 'mesterskabet', 'champion',
+      'titel', 'titlen', 'pokal', 'pokalen', 'trofæ', 'trofae',
+      'guldmedalje', 'guldmedaljen', 'turneringsvinder', 'vinder turneringen',
+      'vinde turneringen', 'vinder ligaen', 'vinde ligaen',
+    ]);
+
+    if (!hasChampionshipSignal) return false;
+
+    // Ved en konkret duel/finale mellem to navngivne parter skal appen ikke
+    // kun gøre det til 10. hus. Der er parterne normalt 1./7. hus, mens
+    // 10. hus stadig kan bruges som bekræftende faktor for titlen/sejren.
+    final hasConcreteOpponent = _containsAny(q, const [
+      ' mellem ', ' mod ', ' versus ', ' vs ', 'finalen mellem', 'kampen mellem',
+      'danmark mod', 'mod danmark',
+    ]);
+
+    return !hasConcreteOpponent;
+  }
+
+  bool _containsAny(String q, List<String> terms) {
+    return terms.any((term) => q.contains(term));
   }
 
   bool _containsTerm(String q, String term) {

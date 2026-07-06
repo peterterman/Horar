@@ -1,4 +1,4 @@
-package com.example.horar_flutter
+package dk.peterterman.horar
 
 import io.flutter.embedding.android.FlutterActivity
 

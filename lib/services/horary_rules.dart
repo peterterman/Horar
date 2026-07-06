@@ -52,6 +52,9 @@ class HoraryRules {
 
     notes.add('Spørgeren vurderes fra 1. hus: ${chart.querentRuler}.');
     notes.add('Det adspurgte vurderes fra ${chart.quesitedHouse}. hus: ${chart.quesitedRuler}.');
+    if (chart.derivedHouseExplanation != null) {
+      notes.add(chart.derivedHouseExplanation!);
+    }
     notes.add('Månen bruges som medsignifikator og viser sagens flow.');
     if (chart.questionType != HoraryQuestionType.general) {
       notes.add('Spørgsmålstype: ${chart.questionType.shortLabel}. ${chart.questionType.ruleHint}');
@@ -881,7 +884,7 @@ class HoraryRules {
       return '$planetName er i Solens hjerte. Det tæller positivt som særlig beskyttelse eller koncentreret kraft.';
     }
     if (condition.combust) {
-      return '$planetName er for tæt på Solen og mister synlighed/kraft. Det er en betydelig svækkelse i horarisk dømmekraft.';
+      return '$planetName er for tæt på Solen og mister synlighed/kraft. Det er en betydelig svækkelse i horar-astrologisk dømmekraft.';
     }
     if (condition.underSunBeams) {
       return '$planetName er under solstråler. Det svækker eller skjuler planeten, men ikke så alvorligt som egentlig forbrænding.';

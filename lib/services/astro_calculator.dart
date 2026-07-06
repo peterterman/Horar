@@ -3,6 +3,7 @@ import 'dart:math';
 import 'package:sweph/sweph.dart' hide HousePosition;
 
 import '../models/horary_models.dart';
+import 'derived_house_resolver.dart';
 import 'horary_rules.dart';
 
 class _FixedStarData {
@@ -43,7 +44,7 @@ class AstroCalculator {
   };
 
   // Udvalgte fixstjerner med omtrentlige tropiske længder for moderne epoke.
-  // De bruges som praktiske horariske markører med lille orb, ikke som
+  // De bruges som praktiske horar-astrologiske markører med lille orb, ikke som
   // astronomisk præcisionskatalog.
   static const List<_FixedStarData> fixedStars = [
     _FixedStarData('Algol', 56.2, 'Saturn/Jupiter', 'krise, tab af hovedet, stærk uro eller noget dramatisk'),
@@ -190,6 +191,9 @@ class AstroCalculator {
     final querentRuler = rulers[ascSign] ?? '-';
     final quesitedRuler = rulers[quesitedSign] ?? '-';
     final answerMode = detectHoraryAnswerMode(question);
+    final derivedHouse = DerivedHouseResolver.resolve(question);
+    final derivedHouseExplanation =
+        derivedHouse != null && derivedHouse.finalHouse == quesitedHouse ? derivedHouse.explanation : null;
 
     final futureAspects = _futureAspectEvents(planets);
     final moonPrevious = _nearestAspectByMotion(
@@ -260,6 +264,7 @@ class AstroCalculator {
       questionType: questionType,
       answerMode: answerMode,
       quesitedHouse: quesitedHouse,
+      derivedHouseExplanation: derivedHouseExplanation,
       planets: planets,
       houses: houses,
       querentRuler: querentRuler,
@@ -295,6 +300,7 @@ class AstroCalculator {
       questionType: preliminary.questionType,
       answerMode: preliminary.answerMode,
       quesitedHouse: preliminary.quesitedHouse,
+      derivedHouseExplanation: preliminary.derivedHouseExplanation,
       planets: preliminary.planets,
       houses: preliminary.houses,
       querentRuler: preliminary.querentRuler,

@@ -10,9 +10,11 @@ dependencies:
   flutter:
     sdk: flutter
   sweph: ^3.2.1+2.10.3
-  path_provider: ^2.1.5
+  path_provider: ^2.1.6
   http: ^1.2.2
   geolocator: ^14.0.3
+  pdf: ^3.12.0
+  share_plus: ^13.2.0
 
 dev_dependencies:
   flutter_test:

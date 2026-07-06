@@ -78,6 +78,7 @@ enum HoraryQuestionType {
   bossAuthority,
   reputationStatus,
   businessCompany,
+  championshipTitle,
 
   // 11. hus
   friendsGroups,
@@ -421,6 +422,12 @@ const Map<HoraryQuestionType, _QuestionTypeData> _questionTypeData = {
     shortLabel: 'Firma/succes',
     defaultHouse: 10,
     ruleHint: '10. hus kan bruges til firmaets retning, succes, ledelse og den synlige position.',
+  ),
+  HoraryQuestionType.championshipTitle: _QuestionTypeData(
+    label: '10. hus – mesterskab / titel / offentlig sejr',
+    shortLabel: 'Mesterskab/sejr',
+    defaultHouse: 10,
+    ruleHint: '10. hus bruges til titlen, sejren, mesterskabet, pokalen og offentlig hæder. Ved konkret duel kan 1./7. hus vise parterne.',
   ),
 
   // 11. hus
@@ -904,6 +911,7 @@ class HoraryChart {
   final HoraryQuestionType questionType;
   final HoraryAnswerMode answerMode;
   final int quesitedHouse;
+  final String? derivedHouseExplanation;
   final List<PlanetPosition> planets;
   final List<HousePosition> houses;
   final String querentRuler;
@@ -937,6 +945,7 @@ class HoraryChart {
     required this.questionType,
     required this.answerMode,
     required this.quesitedHouse,
+    this.derivedHouseExplanation,
     required this.planets,
     required this.houses,
     required this.querentRuler,

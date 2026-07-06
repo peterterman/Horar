@@ -42,12 +42,31 @@ class _ZodiacWheelPainter extends CustomPainter {
       ..style = PaintingStyle.stroke
       ..strokeWidth = 1.2
       ..color = AppColors.divider;
+    final signBoundaryPaint = Paint()
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = 0.9
+      ..color = AppColors.divider.withOpacity(0.72);
+    final signRingPaint = Paint()
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = 1.0
+      ..color = AppColors.divider.withOpacity(0.72);
     final planetPaint = Paint()
       ..style = PaintingStyle.fill
       ..color = AppColors.brown;
 
     canvas.drawCircle(center, radius, circlePaint);
     canvas.drawCircle(center, radius * 0.72, circlePaint);
+
+    // Tegn-ringen: de 12 tegn afgrænses hver 30. grad.
+    // Husgrænserne tegnes senere helt ind i kortet, mens tegn-grænserne
+    // kun tegnes i den ydre zodiac-ring, så de to slags grænser kan skelnes.
+    canvas.drawCircle(center, radius * 0.82, signRingPaint);
+    for (var i = 0; i < 12; i++) {
+      final boundaryLon = i * 30.0;
+      final outer = _point(center, radius, boundaryLon, asc);
+      final inner = _point(center, radius * 0.72, boundaryLon, asc);
+      canvas.drawLine(inner, outer, signBoundaryPaint);
+    }
 
     for (var i = 0; i < 12; i++) {
       final signLon = i * 30.0 + 15.0;
