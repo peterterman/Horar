@@ -50,3 +50,5 @@ android/key.properties
 *.keystore
 .env
 .spisetavle_env
+*.bak
+*_backup_*.dart
