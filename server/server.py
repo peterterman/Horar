@@ -149,6 +149,10 @@ async def horar_house_suggestion(request: Request):
     """
     try:
         payload = await request.json()
+        override = _local_house_suggestion_override(payload)
+        if override is not None:
+            return override
+
         prompt = _build_house_suggestion_prompt(payload)
 
         response = client.responses.create(
@@ -202,6 +206,39 @@ async def horar_house_suggestion(request: Request):
 
     except Exception as e:
         return JSONResponse({"status": "error", "message": str(e)}, status_code=500)
+
+
+
+def _local_house_suggestion_override(payload: dict):
+    """Faste regler før AI-husforslag."""
+    question = str(payload.get("question", "")).lower()
+
+    pet_words = [
+        "kat", "katten", "katte",
+        "hund", "hunden", "hunde",
+        "kæledyr", "kaeledyr",
+        "lille dyr", "små dyr", "smaa dyr",
+        "kanin", "kaninen",
+        "fugl", "fuglen",
+    ]
+
+    if any(w in question for w in pet_words):
+        return {
+            "house": 6,
+            "question_type": "pet",
+            "confidence": "high",
+            "reason": (
+                "Kat, hund, kæledyr og små dyr hører i klassisk horar-astrologi "
+                "til 6. hus. Dyret skal derfor ikke behandles som en almindelig "
+                "ting i 2. hus eller som selve hjemmet i 4. hus."
+            ),
+            "derived_house_explanation": (
+                "Fast regel: lille dyr/kæledyr = 6. hus. "
+                "Ved 'Hvor er katten?' bruges 6. hus som dyrets hus og tilholdssted."
+            ),
+        }
+
+    return None
 
 
 def _build_horar_prompt(payload: dict) -> str:
